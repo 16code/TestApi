@@ -1,4 +1,5 @@
 const request = require('../../util/request');
+const requestOrigin = require('request');
 const topListMapper = {
     0: ['云音乐新歌榜', '3779629'],
     1: ['云音乐热歌榜', '3778678'],
@@ -133,12 +134,16 @@ function getSongDetails(req, res) {
         .then(data => {
             const [song, media, lyric] = data;
             const { id: SongID, name, ar, alia, al, mv, h, m, l } = song.songs[0];
-            al.blurUrl = al.pic_str ? `//music.163.com/api/img/blur/${al.pic_str}` : null;
+            al.blurUrl = al.pic_str ? `/api/songs/${al.pic_str}/blur` : null;
             al.picUrl = al.picUrl.replace(/^https?:/, '');
             const adjustData = { id: SongID, name, artist: ar, album: al, alia: alia && alia[0] ? alia[0] : null, mv: mv !== 0 ? mv : null };
-            console.log(media);
-            const { url } = media.data[0];
-            adjustData.media = (url && url.replace(/^https?:/, '')) || null;
+            let { url } = media;
+            url = (url && url.replace(/^https?/, 'http')) || null;
+            if (url) {
+                url = url.replace('.mp3', '');
+                url = `/api/songs/${idx}/media?url=${encodeURIComponent(url)}`;
+            }
+            adjustData.media = url;
             adjustData.lyric = lyric.lrc.lyric || '';
             adjustData.quality = (h ? h.br : m.br || 96000) / 1000;
             res.json(adjustData);
@@ -202,8 +207,40 @@ function __songUrl(req, res, idx) {
         br: br,
         csrf_token: ''
     };
-    return new request('/song/enhance/player/url', req).save(data);
+    return new Promise((resolve, reject) => {
+        new request('/song/enhance/player/url', req)
+            .save(data)
+            .then(resp => {
+                resolve(resp.data && resp.data[0]);
+            })
+            .catch(reject);
+    });
 }
+
+function getMedia(req, res) {
+    const url = req.query.url;
+    const file = 'http://119.23.73.114/media?url=' + encodeURIComponent(url) + '.mp3';
+    const fileStream = requestOrigin.get(file);
+    if (fileStream) {
+        req.pipe(fileStream);
+        fileStream.pipe(res);
+    } else {
+        res.status(500).end({ msg: 'Can\'t open file' });
+    }
+}
+
+function getBlurImg(req, res) {
+    const id = req.params.id;
+    const file = `http://music.163.com/api/img/blur/${id}`;
+    const fileStream = requestOrigin.get(file);
+    if (fileStream) {
+        req.pipe(fileStream);
+        fileStream.pipe(res);
+    } else {
+        res.status(500).end({ msg: 'Can\'t open file' });
+    }
+}
+
 module.exports = {
     getNewSongs,
     getTopSongs,
@@ -211,5 +248,7 @@ module.exports = {
     getSongDetails,
     getSimiSong,
     likeSong,
-    getLyric
+    getLyric,
+    getMedia,
+    getBlurImg
 };

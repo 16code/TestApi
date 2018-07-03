@@ -46,6 +46,7 @@ class createRequest {
                 Connection: 'keep-alive',
                 'Content-Type': 'application/x-www-form-urlencoded',
                 Referer: 'http://music.163.com',
+                'X-Real-IP': '119.23.73.114',
                 Host: 'music.163.com',
                 Cookie: cookie,
                 'User-Agent': randomUserAgent()
@@ -81,7 +82,14 @@ class createRequest {
                     reject(errorsD[500]);
                 } else {
                     const cookie = res.headers['set-cookie'];
-                    const bodyData = res.headers['content-type'] !== 'text/plain' && JSON.parse(body);
+                    let bodyData;
+                    try {
+                        bodyData = JSON.parse(body);
+                    } catch (error) {
+                        bodyData = body;
+                    }
+                    // const bodyData = res.headers['content-type'] !== 'text/plain' && JSON.parse(body);
+                    // console.log(res.headers['content-type']);
                     const statusCode = bodyData.code;
                     if (!statusCode) {
                         reject(errorsD[500]);
