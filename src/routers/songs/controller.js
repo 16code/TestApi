@@ -51,14 +51,18 @@ function filterNewSongData(data = {}) {
 }
 function getNewSongs(req, res) {
     const data = {
+        type: 'recommend',
         offset: req.query.offset || 0,
+        limit: req.query.limit || 1000,
         total: true,
-        limit: req.query.limit || 30,
         csrf_token: ''
     };
     new request('/personalized/newsong', req)
         .save(data)
-        .then(data => res.json({ data: filterNewSongData(data) }))
+        .then(d => res.json({
+            data: filterNewSongData(d),
+            total: d.result.length
+        }))
         .catch(error => errorCallBack(error, res));
 }
 // 歌曲排行榜
@@ -80,7 +84,7 @@ function filterTopSongData(data = {}) {
 function getTopSongs(req, res) {
     const queryId = +req.query.id || 1;
     const id = topListMapper[queryId][1];
-    const limit = req.query.limit || 30;
+    const limit = req.query.limit || 1000;
     const data = {
         id,
         total: true,
