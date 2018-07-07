@@ -4,6 +4,7 @@ router.use('/post', function (req, res) {
 	res.json({ok: true})
 });
 router.use('/auth', require('./auth/index'));
+router.use('/dashboard', require('./dashboard'));
 router.use('/user', require('./user/index'));
 router.use('/songs', require('./songs/index'));
 router.use('/artist', require('./artist/index'));
