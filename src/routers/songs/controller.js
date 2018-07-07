@@ -59,10 +59,12 @@ function getNewSongs(req, res) {
     };
     new request('/personalized/newsong', req)
         .save(data)
-        .then(d => res.json({
-            data: filterNewSongData(d),
-            total: d.result.length
-        }))
+        .then(d =>
+            res.json({
+                data: filterNewSongData(d),
+                total: d.result.length
+            })
+        )
         .catch(error => errorCallBack(error, res));
 }
 // 歌曲排行榜
