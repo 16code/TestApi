@@ -76,9 +76,9 @@ function getNewSongs(req, res) {
 // 歌曲排行榜
 function filterTopSongData(data = {}) {
     const {
-        playlist: { tracks = [] }
+        playlist: { tracks = [], description, playCount, trackCount, shareCount, commentCount, subscribedCount, coverImgUrl, updateTime }
     } = data;
-    return tracks.map(item => {
+    const list = tracks.map(item => {
         const { name, id, ar, al, dt } = item;
         return {
             name,
@@ -88,6 +88,19 @@ function filterTopSongData(data = {}) {
             dt
         };
     });
+    return {
+        data: list,
+        meta: {
+            description,
+            playCount,
+            trackCount,
+            shareCount,
+            commentCount,
+            subscribedCount,
+            coverImgUrl,
+            updateTime
+        }
+    };
 }
 function getTopSongs(req, res) {
     const queryId = +req.query.id || 1;
@@ -101,7 +114,7 @@ function getTopSongs(req, res) {
     };
     new request('/v3/playlist/detail', req)
         .save(data)
-        .then(data => res.json({ data: filterTopSongData(data) }))
+        .then(data => res.json(filterTopSongData(data)))
         .catch(error => errorCallBack(error, res));
 }
 // 每日推荐
