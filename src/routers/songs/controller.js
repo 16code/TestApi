@@ -27,6 +27,12 @@ const topListMapper = {
     23: ['云音乐嘻哈榜', '991319590'],
     24: ['抖音排行榜', '2250011882']
 };
+
+function topListCategories(req, res) {
+    const cats = Object.keys(topListMapper).map(key => ({ name: topListMapper[key][0], id: key }));
+    res.send({ data: cats });
+}
+
 function errorCallBack(error, res) {
     error.code = error.code || 500;
     res.status(error.code).json(error);
@@ -256,5 +262,6 @@ module.exports = {
     likeSong,
     getLyric,
     getMedia,
-    getBlurImg
+    getBlurImg,
+    topListCategories
 };

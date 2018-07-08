@@ -10,11 +10,13 @@ const {
     getSimiSong,
     likeSong,
     getMedia,
-    getBlurImg
+    getBlurImg,
+    topListCategories
 } = require('./controller');
 router.get('/', getNewSongs);
 router.get('/new', getNewSongs);
 router.get('/top', getTopSongs);
+router.get('/categories', topListCategories);
 router.get('/recommend', getRecommendSongs);
 router.get('/simi/:id([0-9]{3,12})', getSimiSong);
 router.get('/like/:id([0-9]{3,12})', likeSong);
