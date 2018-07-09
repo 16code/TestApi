@@ -1,35 +1,25 @@
 const request = require('../../util/request');
 const requestOrigin = require('request');
 const topListMapper = {
-    0: ['云音乐新歌榜', '3779629'],
-    1: ['云音乐热歌榜', '3778678'],
-    2: ['网易原创歌曲榜', '2884035'],
-    3: ['云音乐飙升榜', '19723756'],
-    4: ['云音乐电音榜', '10520166'],
-    5: ['UK排行榜周榜', '180106'],
-    6: ['美国Billboard周榜', '60198'],
-    7: ['KTV嗨榜', '21845217'],
-    8: ['iTunes榜', '11641012'],
-    9: ['Hit FM Top榜', '120001'],
-    10: ['日本Oricon周榜', '60131'],
-    11: ['韩国Melon排行榜周榜', '3733003'],
-    12: ['韩国Mnet排行榜周榜', '60255'],
-    13: ['韩国Melon原声周榜', '46772709'],
-    14: ['中国TOP排行榜(港台榜)', '112504'],
-    15: ['中国TOP排行榜(内地榜)', '64016'],
-    16: ['香港电台中文歌曲龙虎榜', '10169002'],
-    17: ['华语金曲榜', '4395559'],
-    18: ['中国嘻哈榜', '1899724'],
-    19: ['法国 NRJ EuroHot 30周榜', '27135204'],
-    20: ['台湾Hito排行榜', '112463'],
-    21: ['Beatport全球电子舞曲榜', '3812895'],
-    22: ['云音乐ACG音乐榜', '71385702'],
-    23: ['云音乐嘻哈榜', '991319590'],
-    24: ['抖音排行榜', '2250011882']
+    0: ['云音乐新歌榜', '3779629', '//p1.music.126.net/N2HO5xfYEqyQ8q6oxCw8IQ==/18713687906568048.jpg'],
+    1: ['云音乐热歌榜', '3778678', '//p1.music.126.net/GhhuF6Ep5Tq9IEvLsyCN7w==/18708190348409091.jpg'],
+    2: ['原创歌曲榜', '2884035', '//p1.music.126.net/sBzD11nforcuh1jdLSgX7g==/18740076185638788.jpg'],
+    3: ['云音乐飙升榜', '19723756', '//p1.music.126.net/DrRIg6CrgDfVLEph9SNh7w==/18696095720518497.jpg'],
+    4: ['云音乐电音榜', '10520166', '//p1.music.126.net/qN-sDLqehN1oHGyov-0EZw==/109951163068669685.jpg'],
+    5: ['抖音排行榜', '2250011882', '//p1.music.126.net/bZvjH5KTuvAT0YXlVa-RtQ==/109951163326845001.jpg'],
+    6: ['内地TOP榜', '64016', '//p1.music.126.net/2klOtThpDQ0CMhOy5AOzSg==/18878614648932971.jpg'],
+    7: ['港台TOP榜', '112504', '//p1.music.126.net/JPh-zekmt0sW2Z3TZMsGzA==/18967675090783713.jpg'],
+    8: ['iTunes榜', '11641012', '//p1.music.126.net/83pU_bx5Cz0NlcTq-P3R3g==/18588343581028558.jpg'],
+    9: ['Billboard榜', '60198', '//p1.music.126.net/EBRqPmY8k8qyVHyF8AyjdQ==/18641120139148117.jpg'],
+    10: ['KTV嗨榜', '21845217', '//p1.music.126.net/H4Y7jxd_zwygcAmPMfwJnQ==/19174383276805159.jpg']
 };
 
 function topListCategories(req, res) {
-    const cats = Object.keys(topListMapper).map(key => ({ name: topListMapper[key][0], id: key }));
+    const cats = Object.keys(topListMapper).map(key => ({
+        id: key,
+        name: topListMapper[key][0],
+        coverImgUrl: topListMapper[key][2]
+    }));
     res.send({ data: cats });
 }
 
@@ -76,7 +66,19 @@ function getNewSongs(req, res) {
 // 歌曲排行榜
 function filterTopSongData(data = {}) {
     const {
-        playlist: { tracks = [], description, playCount, trackCount, shareCount, commentCount, subscribedCount, coverImgUrl, updateTime }
+        playlist: {
+            tracks = [],
+            description,
+            playCount,
+            trackCount,
+            shareCount,
+            commentCount,
+            subscribedCount,
+            coverImgUrl,
+            updateTime,
+            subscribed,
+            coverImgId_str
+        }
     } = data;
     const list = tracks.map(item => {
         const { name, id, ar, al, dt } = item;
@@ -91,6 +93,7 @@ function filterTopSongData(data = {}) {
     return {
         data: list,
         meta: {
+            subscribed,
             description,
             playCount,
             trackCount,
@@ -98,12 +101,13 @@ function filterTopSongData(data = {}) {
             commentCount,
             subscribedCount,
             coverImgUrl,
+            coverImgId: coverImgId_str,
             updateTime
         }
     };
 }
 function getTopSongs(req, res) {
-    const queryId = +req.query.id || 1;
+    const queryId = +req.query.id || 0;
     const id = topListMapper[queryId][1];
     const limit = req.query.limit || 1000;
     const data = {
