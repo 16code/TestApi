@@ -58,7 +58,9 @@ function getNewSongs(req, res) {
         .then(d =>
             res.json({
                 data: filterNewSongData(d),
-                total: d.result.length
+                meta: {
+                    trackCount: d.result.length
+                }
             })
         )
         .catch(error => errorCallBack(error, res));
@@ -77,7 +79,8 @@ function filterTopSongData(data = {}) {
             coverImgUrl,
             updateTime,
             subscribed,
-            coverImgId_str
+            coverImgId_str,
+            name
         }
     } = data;
     const list = tracks.map(item => {
@@ -93,6 +96,7 @@ function filterTopSongData(data = {}) {
     return {
         data: list,
         meta: {
+            name,
             subscribed,
             description,
             playCount,
