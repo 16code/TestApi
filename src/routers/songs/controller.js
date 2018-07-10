@@ -267,7 +267,6 @@ function getBlurImg(req, res) {
     const file = `http://music.163.com/api/img/blur/${id}`;
     const fileStream = requestOrigin.get(file);
     if (fileStream) {
-        req.pipe(fileStream);
         fileStream.pipe(res);
     } else {
         res.status(500).end({ msg: 'Can\'t open file' });

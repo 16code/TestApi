@@ -1,5 +1,7 @@
 /* eslint-disable */
 const request = require('../../util/request');
+const requestOrigin = require('request');
+
 function errorCallBack(error, res) {
     res.status(error.code).json(error);
 }
@@ -54,8 +56,18 @@ function getSongsByArtist(req, res) {
         .catch(error => errorCallBack(error, res));
 }
 
+function getArtistImg(req, res) {
+    const url = req.query.url;
+    const fileStream = requestOrigin.get(url);
+    if (fileStream) {
+        fileStream.pipe(res);
+    } else {
+        res.status(500).end({ msg: "Can't open file" });
+    }
+}
 module.exports = {
     getHotArtist,
     getSongsByArtist,
-    getAlbumsByArtist
+    getAlbumsByArtist,
+    getArtistImg
 };

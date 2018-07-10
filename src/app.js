@@ -21,7 +21,7 @@ const allowCrossDomain = function(req, res, next) {
 const onlyStatus200 = (req, res) => res.statusCode === 200 && req.method.toLowerCase() === 'get';
 const docPath = path.resolve(__dirname + '/../docs/');
 
-app.use(allowCrossDomain);
+// app.use(allowCrossDomain);
 app.use(bodyParser.json({ type: 'application/json' }));
 app.use(bodyParser.text({ type: 'text/html' }));
 app.use(bodyParser.urlencoded({ type: 'application/x-www-form-urlencoded', extended: true }));

@@ -47,7 +47,7 @@ function getPlaylist(cat = 'hot') {
 }
 function getArtist() {
     return new Promise((resolve, reject) => {
-        request(`${url}/artist?offset=0&limit=4`, function(error, response, body) {
+        request(`${url}/artist?offset=0&limit=15`, function(error, response, body) {
             if (error) {
                 error.code = (response && response.statusCode) || 500;
                 return reject(error);
