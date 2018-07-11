@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express();
-const { getHotArtist, getSongsByArtist, getAlbumsByArtist, getArtistImg } = require('./controller');
+const { getHotArtist, getSongsByArtist, getAlbumsByArtist, getArtistImg, getCategories, getCategorieArtist } = require('./controller');
 router.get('/', getHotArtist);
 router.get('/artistimg', getArtistImg);
+router.get('/categorie', getCategories);
+router.get('/categorie/:id([0-9]{3,12})', getCategorieArtist);
 router.get('/:id([0-9]{3,12})/songs', getSongsByArtist);
 router.get('/:id([0-9]{3,12})/albums', getAlbumsByArtist);
 module.exports = router;

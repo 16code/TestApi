@@ -27,6 +27,54 @@ function getHotArtist(req, res) {
             res.status(error.code).json(error);
         });
 }
+const cats = `入驻歌手|5001, 华语男歌手|1001
+  , 华语女歌手|1002
+  , 华语组合|1003
+  , 欧美男歌手|2001
+ , 欧美女歌手|2002
+  , 欧美组合|2003
+  , 日本男歌手|6001
+  , 日本女歌手|6002
+  , 日本组合|6003
+  , 韩国男歌手|7001
+  , 韩国女歌手|7002
+  , 韩国组合|7003
+  , 其他男歌手|4001
+  , 其他女歌手|4002
+  , 其他组合|4003`
+    .replace(/[\r\n\s+]/g, '')
+    .split(',')
+    .map(item => {
+        const [name, id] = item.split('|');
+        return { id: +id, name };
+    });
+function getCategories(req, res) {
+    res.json({
+        data: cats
+    });
+}
+function getCategorieArtist(req, res) {
+    const data = {
+        categoryCode: req.params.id || 1001,
+        offset: req.query.offset || 0,
+        total: 'true',
+        limit: req.query.limit || 30
+    };
+    new request('/artist/list', req)
+        .save(data)
+        .then(response =>
+            res.json({
+                data: response.artists,
+                meta: {
+                    more: response.more,
+                    category: +data.categoryCode,
+                    offset: data.offset,
+                    limit: data.limit
+                }
+            })
+        )
+        .catch(error => errorCallBack(error, res));
+}
 
 // 获取歌手单曲
 function getAlbumsByArtist(req, res) {
@@ -69,5 +117,7 @@ module.exports = {
     getHotArtist,
     getSongsByArtist,
     getAlbumsByArtist,
+    getCategories,
+    getCategorieArtist,
     getArtistImg
 };
