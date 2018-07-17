@@ -60,6 +60,9 @@ function getCategorieArtist(req, res) {
         total: 'true',
         limit: req.query.limit || 30
     };
+    if (req.query.initial && /[A-Za-z]/.test(req.query.initial)) {
+        data.initial = req.query.initial.toUpperCase().charCodeAt();
+    }
     new request('/artist/list', req)
         .save(data)
         .then(response =>
